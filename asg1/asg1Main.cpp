@@ -24,6 +24,7 @@ struct OrderFoodItems {
 
 FoodItems foodItems[4];
 int foodItemCount = 0;
+double totalPrice = 0;
 
 class FoodOrderSystem {
 private:
@@ -96,7 +97,7 @@ public:
         else {
             cout << "Available food items:" << endl;
             for (int i = 0; i < foodItemCount; i++) {
-                cout << foodItems[i].itemId << foodItems[i].itemName << " - $" << foodItems[i].price << endl;
+                cout << foodItems[i].itemId << "-" << foodItems[i].itemName << " - $" << foodItems[i].price << endl;
                 //foodItemCount++;
             }
         }
@@ -117,12 +118,20 @@ public:
                 std::cout << "Enter the quantity" << std::endl;
                 std::cin >> foodItemQuantity;
                 double quantityPrice = foodItems[i].price * foodItemQuantity;
+                totalPrice += quantityPrice;
                 CreateNewOrder(foodItems[i].itemId,foodItems[i].itemName,
                                 foodItemQuantity, quantityPrice);
                 return true;
             }
         }
         return false;
+    }
+    void cancelOrder() {
+        while (!userAccountQueue.empty()) {
+            /*UserAccount user = userAccountQueue.front();*/
+            userAccountQueue.pop();
+        }
+        std::cout << "Your Order has been cancelled" << std::endl;
     }
 };
 //display menu 
@@ -212,6 +221,11 @@ int main() {
                         std::cout << "[1]Yes or [2]No" << std::endl;
                         std::cin >> userChoice;
                     } while (userChoice == 1);
+                    std::cout << "Thank You For Your Order" << std::endl;
+                    std::cout << "Total Order Price: " << "$" << totalPrice << std::endl;
+                    break;
+                case 2:
+                    foodOrderSystem.cancelOrder();
                     break;
                 default:
                     std::cout << "Invalid choice. Please select a valid option." << std::endl;
