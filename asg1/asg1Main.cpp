@@ -127,11 +127,25 @@ public:
         return false;
     }
     void cancelOrder() {
-        while (!userAccountQueue.empty()) {
-            /*UserAccount user = userAccountQueue.front();*/
-            userAccountQueue.pop();
+        if (isFoodOrderExists()) 
+        {
+            while (!foodOrderQueue.empty()) {
+                foodOrderQueue.pop();
+            }
+            std::cout << "Your Order has been cancelled" << std::endl;
         }
-        std::cout << "Your Order has been cancelled" << std::endl;
+        else {
+            std::cout << "No Current Order to Cancel" << std::endl;
+        }
+        
+    }
+
+    bool isFoodOrderExists() {
+        if (foodOrderQueue.empty())
+            return false;
+        else
+            return true;
+
     }
 };
 //display menu 
@@ -200,37 +214,44 @@ int main() {
                 foodOrderSystem.addFoodItems(3, "Butter Chicken", 39.90);
                 foodOrderSystem.addFoodItems(4, "Chicken Parmi", 49.90);
                 bool isFoodItemFound = false;
-                std::cout << "Browse the Menu" << std::endl;
-                displayFoodOrderMenu();
-                std::cout << "Enter your choice: ";
-                std::cin >> OrderMenuChoice;
-                switch (OrderMenuChoice)
-                {
-                case 1:
-                    do {
-                        foodOrderSystem.displayFoodItems();
-                        std::cout << "Enter the ID of the dish" << std::endl;
-                        std::cin >> foodMenuChoice;
+                do {
+                    std::cout << "Browse the Menu" << std::endl;
+                    displayFoodOrderMenu();
+                    std::cout << "Enter your choice: ";
+                    std::cin >> OrderMenuChoice;
+                    switch (OrderMenuChoice)
+                    {
+                    case 1:
+                        do {
+                            if (foodOrderSystem.isFoodOrderExists()) {
+                                std::cout << "Your Order Exists. Please wait to be served." << std::endl;
+                                break;
+                            }
+                            foodOrderSystem.displayFoodItems();
+                            std::cout << "Enter the ID of the dish" << std::endl;
+                            std::cin >> foodMenuChoice;
 
-                        isFoodItemFound = foodOrderSystem.isFoodItemListFound(foodMenuChoice);
-                        
-                        if (isFoodItemFound == false) {
-                            std::cout << "invalid food item ID" << std::endl;
-                        }
-                        std::cout << "Do you wish to continue ordering?" << std::endl;
-                        std::cout << "[1]Yes or [2]No" << std::endl;
-                        std::cin >> userChoice;
-                    } while (userChoice == 1);
-                    std::cout << "Thank You For Your Order" << std::endl;
-                    std::cout << "Total Order Price: " << "$" << totalPrice << std::endl;
-                    break;
-                case 2:
-                    foodOrderSystem.cancelOrder();
-                    break;
-                default:
-                    std::cout << "Invalid choice. Please select a valid option." << std::endl;
-                    break;
-                }
+                            isFoodItemFound = foodOrderSystem.isFoodItemListFound(foodMenuChoice);
+
+                            if (isFoodItemFound == false) {
+                                std::cout << "invalid food item ID" << std::endl;
+                            }
+                            std::cout << "Do you wish to continue ordering?" << std::endl;
+                            std::cout << "[1]Yes or [2]No" << std::endl;
+                            std::cin >> userChoice;
+                        } while (userChoice == 1);
+                        std::cout << "Thank You For Your Order" << std::endl;
+                        std::cout << "Total Order Price: " << "$" << totalPrice << std::endl;
+                        break;
+                    case 2:
+                        foodOrderSystem.cancelOrder();
+                        break;
+                    default:
+                        std::cout << "Invalid choice. Please select a valid option." << std::endl;
+                        break;
+                    }
+                } while (OrderMenuChoice != 3);
+                
             }
             else
             {
