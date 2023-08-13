@@ -1,3 +1,5 @@
+/*Name: Haneef Shah
+  Student ID: S10223481B*/
 #include <iostream>
 #include <string>
 #include <queue>
@@ -15,6 +17,7 @@ struct FoodItems
     string itemName;
     double price;
 };
+//struct for order
 struct OrderFoodItems {
     int itemId;
     string itemName;
@@ -22,7 +25,7 @@ struct OrderFoodItems {
     double itemPrice;
 };
 
-FoodItems foodItems[4];
+FoodItems foodItems[4]; //food items array
 int foodItemCount = 0;
 double totalPrice = 0;
 
@@ -41,7 +44,20 @@ public:
         userAccountQueue.push(newUser);
         cout << "User is registered successfully" << endl;
     }
+    /*User Account Queue: This queue maintains a list of registered users, 
+    allowing them to log in. When a user registers, 
+    their account details are enqueued into the userAccountQueue. 
+    During login attempts, I check the credentials against this queue by 
+    dequeuing temporarily to verify the login information while maintaining the order of user accounts.*/
     
+    /*Food Order Queue: For order processing, I implemented a foodOrderQueue. Whenever a user places an order, it's enqueued as an OrderFoodItems instance. 
+    This ensures that orders are processed in the order they were made, 
+    making it fair and efficient for both the customers and the kitchen staff.*/
+
+    /*User Registration and Login: During user registration, the registerUser function adds 
+    the new user to the userAccountQueue. For user login, I use the checkUserLogin function. 
+    It dequeues users from the queue to compare login credentials. 
+    If there's a match, the user is logged in, maintaining the order of user accounts. */
     bool checkUserLogin(string username, string password)
     {
         queue<UserAccount> tempQueue;  // Temporary queue to hold dequeued elements
@@ -89,7 +105,8 @@ public:
             cout << "Space filled. Cannot add further on." << endl;
         }
     }
-    //to display the food items available 
+    /*Displaying Food Items: the displayFoodItems function goes through the available 
+    foodItems array and displays the menu items with their respective details.*/
     void displayFoodItems() {
         if (foodItemCount == 0) {
             cout << "No food items available." << endl;
@@ -102,7 +119,9 @@ public:
             }
         }
     }
-    //create new order
+    /*Creating a New Order: The CreateNewOrder function enqueues order details into the foodOrderQueue 
+    when a user places an order. 
+    This ensures orders are handled one by one as they're received.*/
     void CreateNewOrder(int itemId, string itemName, int itemQuantity, double itemPrice) {
         OrderFoodItems newOrderItems;
         newOrderItems.itemId = itemId;
@@ -111,6 +130,10 @@ public:
         newOrderItems.itemPrice = itemPrice;
         foodOrderQueue.push(newOrderItems);
     }
+    /*Finding Food Item for Ordering: The isFoodItemListFound function searches the foodItems array for the selected food item 
+    based on the item's ID to check for availability. 
+    If found, it calculates the total price considering the quantity 
+    and enqueues the order details into the foodOrderQueue.*/
     bool isFoodItemListFound(int foodMenuChoice) {
         int foodItemQuantity;
         for (int i = 0; i < foodItemCount; i++) {
@@ -126,12 +149,16 @@ public:
         }
         return false;
     }
+    /*Canceling an Order: To cancel orders, the cancelOrder function clears the foodOrderQueue. 
+    If there are pending orders, they're dequeued and discarded, effectively cancelling them.*/
     void cancelOrder() {
         if (isFoodOrderExists()) 
         {
             while (!foodOrderQueue.empty()) {
                 foodOrderQueue.pop();
             }
+            //reset the total price
+            totalPrice = 0;
             std::cout << "Your Order has been cancelled" << std::endl;
         }
         else {
@@ -139,7 +166,9 @@ public:
         }
         
     }
-
+    /*Checking for Existing Orders: The isFoodOrderExists function checks if there are any 
+    pending orders in the foodOrderQueue. If there are, 
+    it returns true, indicating that orders are in process.*/
     bool isFoodOrderExists() {
         if (foodOrderQueue.empty())
             return false;
@@ -155,22 +184,12 @@ void displayMainMenu() {
     std::cout << "[2] Login" << std::endl;
     std::cout << "[3] Exit" << std::endl;
 }
-//Food menu options
+//display Food menu options
 void displayFoodOrderMenu() {
     std::cout << "[1] Create a new order" << std::endl;
     std::cout << "[2] Cancel Order" << std::endl;
     std::cout << "[3] Exit" << std::endl;
 }
-//Display food items
-//void displayFoodItems() {
-//    FoodOrderSystem foodListSystem;
-//    foodListSystem.addFoodItems(1, "Chicken Rice", 19.90);
-//    foodListSystem.addFoodItems(2, "Chicken Adobo", 29.90);
-//    foodListSystem.addFoodItems(3, "Butter Chicken", 39.90);
-//    foodListSystem.addFoodItems(4, "Chicken Parmi", 49.90);
-//
-//    //foodListSystem.displayFoodItems();
-//}
 
 int main() {
     int choice;
@@ -184,12 +203,12 @@ int main() {
     FoodOrderSystem foodOrderSystem;
 
     do {
-        displayMainMenu();
+        displayMainMenu(); // to display main menu 
 
         std::cout << "Enter your choice: ";
         std::cin >> choice;
 
-        switch (choice) {
+        switch (choice) { //check what choice the user entered
         case 1:
             std::cout << "Register option selected." << std::endl;
             std::cout << "Please enter your username: " << std::endl;
@@ -197,7 +216,7 @@ int main() {
             std::cout << "Please enter a password: " << std::endl;
             std::cin >> password;
 
-            foodOrderSystem.registerUser(username, password);
+            foodOrderSystem.registerUser(username, password); //call to register the users
             break;
         case 2:
             std::cout << "Login option selected." << std::endl;
@@ -207,8 +226,9 @@ int main() {
             std::cin >> password;
             //store it to check later
             isLoginSuccessful = foodOrderSystem.checkUserLogin(username, password);
-            
+            //if login is successful
             if (isLoginSuccessful) {
+                //add food items to the array
                 foodOrderSystem.addFoodItems(1, "Chicken Rice", 19.90);
                 foodOrderSystem.addFoodItems(2, "Chicken Adobo", 29.90);
                 foodOrderSystem.addFoodItems(3, "Butter Chicken", 39.90);
@@ -219,19 +239,19 @@ int main() {
                     displayFoodOrderMenu();
                     std::cout << "Enter your choice: ";
                     std::cin >> OrderMenuChoice;
-                    switch (OrderMenuChoice)
+                    switch (OrderMenuChoice) //check order menu choice
                     {
                     case 1:
                         do {
-                            if (foodOrderSystem.isFoodOrderExists()) {
+                            if (foodOrderSystem.isFoodOrderExists()) { //if there's alrdy an order
                                 std::cout << "Your Order Exists. Please wait to be served." << std::endl;
                                 break;
                             }
                             foodOrderSystem.displayFoodItems();
                             std::cout << "Enter the ID of the dish" << std::endl;
                             std::cin >> foodMenuChoice;
-
-                            isFoodItemFound = foodOrderSystem.isFoodItemListFound(foodMenuChoice);
+                            //check if food item id exists, if it does add to the order queue
+                            isFoodItemFound = foodOrderSystem.isFoodItemListFound(foodMenuChoice); 
 
                             if (isFoodItemFound == false) {
                                 std::cout << "invalid food item ID" << std::endl;
